@@ -34,14 +34,15 @@ class SymbolGenerator {
 		String head = head(chars);
 		List<String> tail = tail(chars);
 
-		Function<String, String> headTailConcat = s -> head + s;
+		Function<String, Symbol> mapper = ((Function<String, String>) s -> head + s).andThen(Symbol::new);
 
-		if (tail.size() == 1)
-			return tail.stream().map(s -> head + s).map(Symbol::new);
+		if (tail.size() == 1) {
+			return tail.stream().map(mapper);
+		}
 
 
 		return concat(
-				tail.stream().map(headTailConcat).map(Symbol::new),
+				tail.stream().map(mapper),
 				generateStream(tail)
 		);
 	}
