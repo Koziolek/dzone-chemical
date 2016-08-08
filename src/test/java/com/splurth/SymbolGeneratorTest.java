@@ -19,11 +19,12 @@ public class SymbolGeneratorTest {
 		Collection<Symbol> symbols = sut.generateDistinctValidSymbols(new ChemicalElement("Anna", "An"));
 
 		assertThat(symbols)
-				.hasSize(3)
+				.hasSize(4)
 				.contains(
+						new Symbol("Aa"),
 						new Symbol("An"),
-						new Symbol("Nn"),
-						new Symbol("Na")
+						new Symbol("Na"),
+						new Symbol("Nn")
 				);
 
 	}
