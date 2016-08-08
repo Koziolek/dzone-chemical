@@ -1,13 +1,15 @@
 package com.splurth;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.splurth.ListExtension.head;
+import static com.splurth.ListExtension.tail;
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static java.util.stream.Stream.concat;
 
 /**
@@ -15,19 +17,12 @@ import static java.util.stream.Stream.concat;
  */
 class SymbolGenerator {
 
-	public Collection<Symbol> generateAllValidSymbols(ChemicalElement element) {
-		return getSymbolStream(element).collect(Collectors.toList());
-	}
-
 	public Collection<Symbol> generateDistinctValidSymbols(ChemicalElement element) {
 		return getSymbolStream(element).distinct().collect(Collectors.toList());
 	}
 
 	private Stream<Symbol> getSymbolStream(ChemicalElement element) {
-		String name = element.getName().toLowerCase();
-		List<String> chars = Arrays.asList(name.split(""));
-
-		return generateStream(chars);
+		return generateStream(asList(element.getName().toLowerCase().split("")));
 	}
 
 	private Stream<Symbol> generateStream(List<String> chars) {
@@ -40,20 +35,21 @@ class SymbolGenerator {
 			return tail.stream().map(mapper);
 		}
 
-
 		return concat(
 				tail.stream().map(mapper),
 				generateStream(tail)
 		);
 	}
+}
 
+class ListExtension {
 
-	private <T> T head(List<T> list) {
+	static <T> T head(List<T> list) {
 		return list.get(0);
 	}
 
-	private <T> List<T> tail(List<T> list) {
-		if (list.size() == 0) return Collections.emptyList();
+	static <T> List<T> tail(List<T> list) {
+		if (list.size() == 0) return emptyList();
 		return list.subList(1, list.size());
 	}
 }
