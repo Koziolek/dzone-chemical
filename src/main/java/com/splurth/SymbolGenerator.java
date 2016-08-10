@@ -1,7 +1,6 @@
 package com.splurth;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -17,39 +16,41 @@ import static java.util.stream.Stream.concat;
  */
 class SymbolGenerator {
 
-	public Collection<Symbol> generateDistinctValidSymbols(ChemicalElement element) {
-		return getSymbolStream(element).distinct().collect(Collectors.toList());
-	}
+    private Map<ChemicalElement, Collection<Symbol>> cache = Collections.synchronizedMap(new WeakHashMap<>());
 
-	private Stream<Symbol> getSymbolStream(ChemicalElement element) {
-		return generateStream(asList(element.getName().toLowerCase().split("")));
-	}
+    public Collection<Symbol> generateDistinctValidSymbols(ChemicalElement element) {
+        return cache.computeIfAbsent(element, e -> getSymbolStream(e).distinct().collect(Collectors.toList()));
+    }
 
-	private Stream<Symbol> generateStream(List<String> chars) {
-		String head = head(chars);
-		List<String> tail = tail(chars);
+    private Stream<Symbol> getSymbolStream(ChemicalElement element) {
+        return generateStream(asList(element.getName().toLowerCase().split("")));
+    }
 
-		Function<String, Symbol> mapper = ((Function<String, String>) s -> head + s).andThen(Symbol::new);
+    private Stream<Symbol> generateStream(List<String> chars) {
+        String head = head(chars);
+        List<String> tail = tail(chars);
 
-		if (tail.size() == 1) {
-			return tail.stream().map(mapper);
-		}
+        Function<String, Symbol> mapper = ((Function<String, String>) s -> head + s).andThen(Symbol::new);
 
-		return concat(
-				tail.stream().map(mapper),
-				generateStream(tail)
-		);
-	}
+        if (tail.size() == 1) {
+            return tail.stream().map(mapper);
+        }
+
+        return concat(
+                tail.stream().map(mapper),
+                generateStream(tail)
+        );
+    }
 }
 
 class ListExtension {
 
-	static <T> T head(List<T> list) {
-		return list.get(0);
-	}
+    static <T> T head(List<T> list) {
+        return list.get(0);
+    }
 
-	static <T> List<T> tail(List<T> list) {
-		if (list.size() == 0) return emptyList();
-		return list.subList(1, list.size());
-	}
+    static <T> List<T> tail(List<T> list) {
+        if (list.size() == 0) return emptyList();
+        return list.subList(1, list.size());
+    }
 }
