@@ -32,7 +32,7 @@ class SymbolGenerator {
 		List<String> tail = tail(chars);
 
 		if (tail.size() == 1) {
-			produceSymbols(head, tail);
+			return produceSymbols(head, tail);
 		}
 
 		return concat(
@@ -42,7 +42,6 @@ class SymbolGenerator {
 	}
 	private Stream<Symbol> produceSymbols(String head, List<String> tail) {
 		Function<String, Symbol> mapper = ((Function<String, String>) s -> head + s).andThen(Symbol::new);
-
 		return tail.stream().map(mapper);
 	}
 
@@ -51,6 +50,7 @@ class SymbolGenerator {
 class ListExtension {
 
     static <T> T head(List<T> list) {
+	    if (list.size() == 0) return null;
         return list.get(0);
     }
 
