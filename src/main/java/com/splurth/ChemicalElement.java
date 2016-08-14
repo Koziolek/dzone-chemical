@@ -5,28 +5,30 @@ package com.splurth;
  */
 public class ChemicalElement {
 
-    private final String name;
+	private final String name;
 
-    private final Symbol symbol;
+	private final Symbol symbol;
 
-    public ChemicalElement(String name, String symbol) {
-        this.name = name;
-        this.symbol = new Symbol(symbol);
-    }
+	public ChemicalElement(String name, String symbol) {
+		if (name.matches("[^a-zA-Z]*") || symbol.matches("[^a-zA-Z]*"))
+			throw new IllegalArgumentException("Invalid char in name or symbol");
+		this.name = name;
+		this.symbol = new Symbol(symbol);
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    @Override
-    public String toString() {
-        return "ChemicalElement{" +
-                "name='" + name + '\'' +
-                ", symbol=" + symbol +
-                '}';
-    }
+	@Override
+	public String toString() {
+		return "ChemicalElement{" +
+				"name='" + name + '\'' +
+				", symbol=" + symbol +
+				'}';
+	}
 
-    public Symbol getSymbol() {
-        return symbol;
-    }
+	public Symbol getSymbol() {
+		return symbol;
+	}
 }

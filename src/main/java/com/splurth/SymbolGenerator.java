@@ -29,16 +29,21 @@ class SymbolGenerator {
 		String head = head(chars);
 		List<String> tail = tail(chars);
 
-		Function<String, Symbol> mapper = ((Function<String, String>) s -> head + s).andThen(Symbol::new);
 
 		if (tail.size() == 1) {
-			return tail.stream().map(mapper);
+			return produceSymbols(tail, head);
 		}
 
 		return concat(
-				tail.stream().map(mapper),
+				produceSymbols(tail, head),
 				generateStream(tail)
 		);
+	}
+
+	private Stream<Symbol> produceSymbols(List<String> tail, String head) {
+		Function<String, Symbol> mapper = ((Function<String, String>) s -> head + s).andThen(Symbol::new);
+
+		return tail.stream().map(mapper);
 	}
 }
 
