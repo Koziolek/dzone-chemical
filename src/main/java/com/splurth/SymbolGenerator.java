@@ -1,7 +1,6 @@
 package com.splurth;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -17,44 +16,46 @@ import static java.util.stream.Stream.concat;
  */
 class SymbolGenerator {
 
-	public Collection<Symbol> generateDistinctValidSymbols(ChemicalElement element) {
-		return getSymbolStream(element).distinct().collect(Collectors.toList());
-	}
+    private Map<ChemicalElement, Collection<Symbol>> cache = Collections.synchronizedMap(new WeakHashMap<>());
 
-	private Stream<Symbol> getSymbolStream(ChemicalElement element) {
-		return generateStream(asList(element.getName().toLowerCase().split("")));
-	}
+    public Collection<Symbol> generateDistinctValidSymbols(ChemicalElement element) {
+        return cache.computeIfAbsent(element, e -> getSymbolStream(e).distinct().collect(Collectors.toList()));
+    }
+
+    private Stream<Symbol> getSymbolStream(ChemicalElement element) {
+        return generateStream(asList(element.getName().toLowerCase().split("")));
+    }
+
 
 	private Stream<Symbol> generateStream(List<String> chars) {
 		String head = head(chars);
 		List<String> tail = tail(chars);
 
-
 		if (tail.size() == 1) {
-			return produceSymbols(tail, head);
+			produceSymbols(head, tail);
 		}
 
 		return concat(
-				produceSymbols(tail, head),
+				produceSymbols(head, tail),
 				generateStream(tail)
 		);
 	}
-
-	private Stream<Symbol> produceSymbols(List<String> tail, String head) {
+	private Stream<Symbol> produceSymbols(String head, List<String> tail) {
 		Function<String, Symbol> mapper = ((Function<String, String>) s -> head + s).andThen(Symbol::new);
 
 		return tail.stream().map(mapper);
 	}
+
 }
 
 class ListExtension {
 
-	static <T> T head(List<T> list) {
-		return list.get(0);
-	}
+    static <T> T head(List<T> list) {
+        return list.get(0);
+    }
 
-	static <T> List<T> tail(List<T> list) {
-		if (list.size() == 0) return emptyList();
-		return list.subList(1, list.size());
-	}
+    static <T> List<T> tail(List<T> list) {
+        if (list.size() == 0) return emptyList();
+        return list.subList(1, list.size());
+    }
 }
